@@ -1,0 +1,257 @@
+/* ═══ 桌面小组件设置页 ═══ */
+/*
+  结构：预览卡（最上，固定可见）→ 开关与角色 → 尺寸 → 模板 → 头像 → 主动生成。
+  预览放最上是因为它是这页的主角：用户改任何东西都该立刻看到结果。
+*/
+
+.widget-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+
+/* ── 诊断结果 ── */
+/*
+  逐行列出链路每一段的真实状态。桌面显示不对时，用户靠它转述给我们，
+  比反复描述「就是不行」有用得多。
+*/
+.ws-diagnosis {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--c-inset, #f2f2f6);
+  font-size: 11.5px;
+  line-height: 1.75;
+}
+.ws-diagnosis p {
+  margin: 0;
+  word-break: break-word;
+  color: var(--c-text-secondary, #8e8e98);
+}
+.ws-diagnosis p.is-ok { color: #2fa46a; }
+.ws-diagnosis p.is-bad { color: #d9534f; }
+.ws-diagnosis p.is-plain { opacity: 0.75; }
+
+/* ── 预览 ── */
+.ws-preview-card {
+  background: var(--c-card, #fff);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(23, 23, 28, 0.05);
+}
+.ws-preview-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ws-preview-head b { font-size: 14px; font-weight: 800; }
+.ws-preview-head span {
+  font-size: 11px;
+  color: var(--c-text-secondary, #8e8e98);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 预览舞台：用棋盘格底衬出透明区域，看得出模板的圆角与透明度真实效果 */
+.ws-preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px;
+  border-radius: 14px;
+  background-color: #ececf0;
+  background-image:
+    linear-gradient(45deg, #e0e0e6 25%, transparent 25%),
+    linear-gradient(-45deg, #e0e0e6 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e0e0e6 75%),
+    linear-gradient(-45deg, transparent 75%, #e0e0e6 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  overflow-x: auto;
+}
+/* 预览框：尺寸就按用户配的 dp 来（CSS px 在手机上≈dp），所见即所得 */
+.ws-preview-frame {
+  border: 0;
+  display: block;
+  flex: 0 0 auto;
+  background: transparent;
+  max-width: 100%;
+}
+
+.ws-preview-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ws-preview-actions .ws-btn { flex: 1; }
+
+/* ── 通用卡片 ── */
+.ws-card {
+  background: var(--c-card, #fff);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(23, 23, 28, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ws-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ws-card-title { font-size: 13.5px; font-weight: 800; }
+
+/* ── 开关行 ── */
+.ws-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ws-row-text { flex: 1; min-width: 0; }
+.ws-row-text b { font-size: 14px; font-weight: 700; display: block; }
+.ws-row-text p {
+  font-size: 11.5px;
+  color: var(--c-text-secondary, #8e8e98);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.ws-inline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--c-text-secondary, #8e8e98);
+}
+
+/* ── 表单 ── */
+.ws-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-text-secondary, #8e8e98);
+}
+.ws-field select,
+.ws-field input {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 13px;
+  background: var(--c-fill, #f0f0f4);
+  color: var(--c-text, #17171c);
+  outline: none;
+  max-width: 100%;
+  font-weight: 500;
+}
+.ws-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ── 模板编辑区 ── */
+.ws-template {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: var(--c-fill, #f0f0f4);
+  color: var(--c-text, #17171c);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+.ws-template-actions {
+  display: flex;
+  gap: 8px;
+}
+.ws-template-actions .ws-btn { flex: 1; }
+
+/* ── 按钮 ── */
+.ws-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--c-text, #17171c);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.16s ease;
+}
+.ws-btn:active { transform: scale(0.95); }
+.ws-btn:disabled { opacity: 0.45; cursor: default; }
+.ws-btn.ghost {
+  background: var(--c-card, #fff);
+  color: var(--c-text, #17171c);
+  border: 1px solid var(--c-line, #ebebf0);
+}
+.ws-link {
+  border: none;
+  background: none;
+  color: var(--c-accent, #7a5af8);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+/* ── 说明文字 ── */
+.ws-hint {
+  font-size: 11.5px;
+  color: var(--c-text-secondary, #8e8e98);
+  line-height: 1.65;
+}
+.ws-warn {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #b8860b;
+  background: #fdf6e3;
+  border-radius: 10px;
+  padding: 9px 11px;
+}
+
+/* ── 占位符速查 ── */
+.ws-more summary {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-secondary, #8e8e98);
+  cursor: pointer;
+  padding: 2px 0;
+}
+/* details 上直接 flex 在 iOS Safari 不生效，间距交给内层 */
+.ws-placeholders {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 8px;
+}
+.ws-placeholder-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.ws-placeholder-row code {
+  flex: 0 0 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  background: var(--c-fill, #f0f0f4);
+  color: var(--c-accent, #7a5af8);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+.ws-placeholder-row span {
+  flex: 1;
+  min-width: 0;
+  color: var(--c-text-secondary, #8e8e98);
+}

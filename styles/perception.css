@@ -1,0 +1,291 @@
+/* ── 感知系统：设置与诊断面板 ─────────────────────
+   与工坊（qa.css）同一套设计语言：浅色卡片、柔和阴影、紫色强调。
+   全部变量 scope 在 .per-shell 内，不污染全局。
+
+   布局说明：本面板是**嵌在设置页 page-body 内**渲染的（与 CallOverlaySettings
+   同一挂载方式），所以不能用 position:absolute 自撑全屏——那样会盖住设置页的
+   标题栏。改用普通文档流，滚动交给设置页的 page-body。 */
+
+.per-shell {
+  --per-accent: #6f5bd6;
+  --per-accent-soft: rgba(111, 91, 214, 0.12);
+  --per-ok: #34c759;
+  --per-warn: #ff9f0a;
+  --per-off: #a0a3a8;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: var(--c-text-title);
+}
+
+/* ── 状态总览卡 ── */
+.per-hero {
+  margin: 0 0 4px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--c-panel);
+  box-shadow: 0 6px 20px rgba(40, 34, 20, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.per-hero-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.per-hero-title {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(15px * var(--app-text-scale, 1));
+  font-weight: 700;
+}
+
+.per-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: calc(11.5px * var(--app-text-scale, 1));
+  font-weight: 600;
+  background: color-mix(in srgb, var(--per-off) 12%, transparent);
+  color: var(--per-off);
+  white-space: nowrap;
+}
+.per-state[data-tone="on"] { background: color-mix(in srgb, var(--per-ok) 14%, transparent); color: var(--per-ok); }
+.per-state[data-tone="warn"] { background: color-mix(in srgb, var(--per-warn) 14%, transparent); color: var(--per-warn); }
+
+.per-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: currentColor;
+  flex: 0 0 auto;
+}
+.per-dot.is-pulse { animation: per-pulse 2s ease-in-out infinite; }
+@keyframes per-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* 概览数字：一眼看到「今天发生了多少」 */
+.per-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.per-metric {
+  padding: 9px 10px;
+  border-radius: 11px;
+  background: var(--c-page-body-bg);
+  text-align: center;
+}
+.per-metric-value {
+  font-size: calc(17px * var(--app-text-scale, 1));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.per-metric-label {
+  margin-top: 3px;
+  font-size: calc(10px * var(--app-text-scale, 1));
+  color: var(--c-text);
+}
+
+.per-note {
+  font-size: calc(11.5px * var(--app-text-scale, 1));
+  line-height: 1.6;
+  color: var(--c-text);
+}
+.per-note.is-warn { color: var(--per-warn); }
+
+/* ── 能力列表 ── */
+.per-cap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+}
+.per-cap + .per-cap {
+  border-top: 1px solid color-mix(in srgb, var(--c-card-border) 20%, transparent);
+}
+
+.per-cap-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--per-accent-soft);
+  color: var(--per-accent);
+}
+.per-cap[data-available="false"] .per-cap-icon {
+  background: color-mix(in srgb, var(--per-off) 12%, transparent);
+  color: var(--per-off);
+}
+
+.per-cap-body { flex: 1; min-width: 0; }
+.per-cap-name {
+  font-size: calc(13.5px * var(--app-text-scale, 1));
+  font-weight: 600;
+}
+.per-cap-desc {
+  margin-top: 3px;
+  font-size: calc(11px * var(--app-text-scale, 1));
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+/* 三重状态徽章：用户开关 / 原生支持 / 前置条件 —— 卡在哪一环一眼可见 */
+.per-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.per-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: calc(10px * var(--app-text-scale, 1));
+  font-weight: 600;
+  background: var(--c-page-body-bg);
+  color: var(--c-text);
+}
+.per-tag[data-tone="ok"] { background: color-mix(in srgb, var(--per-ok) 13%, transparent); color: var(--per-ok); }
+.per-tag[data-tone="warn"] { background: color-mix(in srgb, var(--per-warn) 13%, transparent); color: var(--per-warn); }
+.per-tag[data-tone="off"] { background: color-mix(in srgb, var(--per-off) 14%, transparent); color: var(--per-off); }
+
+.per-cap-toggle { flex: 0 0 auto; align-self: center; }
+
+/* ── 参数区 ── */
+.per-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+.per-field + .per-field {
+  border-top: 1px solid color-mix(in srgb, var(--c-card-border) 20%, transparent);
+}
+.per-field-body { flex: 1; min-width: 0; }
+.per-field-label {
+  font-size: calc(13px * var(--app-text-scale, 1));
+  font-weight: 500;
+}
+.per-field-hint {
+  margin-top: 3px;
+  font-size: calc(10.5px * var(--app-text-scale, 1));
+  line-height: 1.5;
+  color: var(--c-text);
+}
+.per-field-input {
+  width: 84px;
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--c-input-border);
+  background: var(--c-input);
+  color: var(--c-text-title);
+  font-size: calc(13px * var(--app-text-scale, 1));
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.per-field-input:focus { border-color: var(--per-accent); }
+
+/* ── 流水时间轴 ── */
+.per-log { display: flex; flex-direction: column; padding: 4px 16px 8px; }
+.per-log-item {
+  position: relative;
+  padding: 9px 0 9px 18px;
+}
+/* 竖线：最后一条不画，避免拖尾 */
+.per-log-item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 20px;
+  bottom: -2px;
+  width: 1px;
+  background: color-mix(in srgb, var(--c-card-border) 60%, transparent);
+}
+.per-log-item:last-child::before { display: none; }
+.per-log-item::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 15px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--per-accent);
+}
+.per-log-item[data-skipped="true"]::after { background: var(--per-off); }
+
+.per-log-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.per-log-type {
+  font-size: calc(12.5px * var(--app-text-scale, 1));
+  font-weight: 600;
+}
+.per-log-time {
+  margin-left: auto;
+  font-size: calc(10px * var(--app-text-scale, 1));
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+.per-log-payload {
+  margin-top: 2px;
+  font-size: calc(11.5px * var(--app-text-scale, 1));
+  color: var(--c-text-title);
+  word-break: break-word;
+}
+.per-log-outcome {
+  margin-top: 3px;
+  font-size: calc(10.5px * var(--app-text-scale, 1));
+  line-height: 1.5;
+  color: var(--c-text);
+}
+.per-log-skipped { color: var(--per-warn); }
+
+.per-empty {
+  padding: 32px 16px;
+  text-align: center;
+  font-size: calc(12.5px * var(--app-text-scale, 1));
+  color: var(--c-text);
+  line-height: 1.7;
+}
+
+/* 诊断：原始快照块 */
+.per-raw {
+  margin: 8px 16px 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--c-page-body-bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: calc(10.5px * var(--app-text-scale, 1));
+  line-height: 1.55;
+  color: var(--c-text);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.per-actions {
+  display: flex;
+  gap: 10px;
+  padding: 4px 16px 8px;
+}
+.per-actions .ui-btn { flex: 1; }

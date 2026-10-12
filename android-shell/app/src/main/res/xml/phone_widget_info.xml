@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  小组件元信息。
+
+  updatePeriodMillis：系统定时刷新的最短间隔。Android 硬性下限是 30 分钟，
+  填更小也会被抬到 30 分钟。它只是「小手机完全关闭」时的兜底——
+  网页侧内容一变会主动 push（widgetUpdate → updateAll），那条路没有频率限制。
+
+  minWidth/minHeight：按 4×2 格申请（每格约 70dp）。用户在设置页配的尺寸
+  可以超出这个框，超出的部分会被系统裁掉（不做拉伸，避免变形）。
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/phone_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/phone_widget_desc" />

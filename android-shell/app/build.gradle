@@ -1,0 +1,85 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+// 签名：CI 里通过环境变量注入 keystore（见 android-shell/README.md）；
+// 没有配置时 release 构建产出未签名 APK，debug 构建始终可直接安装测试。
+def ksFile = System.getenv("SHELL_KEYSTORE_FILE")
+def siteUrl = (System.getenv("SHELL_SITE_URL") ?: "https://example.invalid").replaceAll('/+$', '')
+
+android {
+    namespace 'app.floatphone.shell'
+    // compileSdk 36：Health Connect 1.1.0 的硬性要求（它的 AAR 元数据要求
+    // minCompileSdk=36）。这里只抬 compileSdk，**targetSdk 保持 34 不动**——
+    // targetSdk 决定运行时的行为约定（如边到边布局），动它会影响已经调好的
+    // WebView 全屏布局，那是另一件事，得单独验证，不该顺手带上。
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "app.floatphone.shell"
+        minSdk 26
+        targetSdk 34
+        // versionCode 必须严格递增，否则 Android 拒绝覆盖安装（表现为「应用未安装」）。
+        // 1.0.7：回复条配色逐项自定义；1.0.8：浮窗自检与失败留痕。
+        // 1.0.9：修 TransactionTooLargeException（头像经 Intent 撑爆 Binder 上限）。
+        // 1.0.10：浮窗改圆角矩形；浮窗左上角显示「待发 N」角标。
+        // 1.0.11：截屏与主动查岗（含查岗浮层回复框）；通知栏「直接回复」。
+        // 1.0.12：截屏可选收件人；位置感知；睡眠（Health Connect）。
+        versionCode 11
+        versionName "1.0.12"
+        buildConfigField "String", "SITE_URL", "\"${siteUrl}\""
+    }
+
+    buildFeatures { buildConfig true }
+
+    if (ksFile) {
+        signingConfigs {
+            release {
+                storeFile file(ksFile)
+                storePassword System.getenv("SHELL_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("SHELL_KEY_ALIAS")
+                keyPassword System.getenv("SHELL_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ksFile) signingConfig signingConfigs.release
+        }
+        debug {
+            // 有固定签名时 debug 也用同一把钥匙。
+            // CI 每次构建都是全新容器，自动生成的 debug 密钥每次都不同——
+            // 签名一变就只能卸载重装，App 数据（WebView 沙盒里的聊天记录、
+            // 角色卡）会一起丢。统一签名后 debug / release 两个包可以互相
+            // 覆盖安装，选哪个都不会再触发「应用未安装」。
+            if (ksFile) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.activity:activity-ktx:1.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    // Health Connect：读睡眠。选它而不是各厂商自己的运动 App SDK，
+    // 是因为它由系统统一汇聚（华为/小米/三星健康都往里写），接一次就够，
+    // 不必为每个 ROM 各写一套。代价是用户得在系统里装/启用它并逐项授权。
+    //
+    // 版本 1.1.0（稳定版）。注意它抬高了整条构建链的门槛：AAR 元数据要求
+    // compileSdk 36 + AGP 8.9.1+，所以根 build.gradle 与 CI workflow 里的
+    // AGP / Gradle 版本是配套改的，三者一起动，单独改一个必然失败。
+    // （曾试过降到 1.0.0 想避开升级，但那个版本在 Google Maven 上并不存在。）
+    implementation 'androidx.health.connect:connect-client:1.1.0'
+    // Health Connect 的读取 API 是挂起函数，而桥要让网页同步读，所以用协程
+    // 在后台取、取完写进缓存。显式声明而不是靠传递依赖，避免版本变动就编译失败。
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+}

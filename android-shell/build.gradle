@@ -1,0 +1,8 @@
+plugins {
+    // AGP 8.9.1 是 Health Connect 1.1.0 的硬性要求（它的 AAR 元数据里写着
+    // minCompileSdk=36、minAgpVersion=8.9.1），CI 报错原文就是这个。
+    // 配套的 Gradle 版本见 .github/workflows/android-shell.yml（AGP 8.9 需要
+    // Gradle 8.11.1 及以上），两处必须一起动，只改一个会直接构建失败。
+    id 'com.android.application' version '8.9.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.24' apply false
+}

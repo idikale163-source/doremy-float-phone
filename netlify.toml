@@ -1,0 +1,94 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Keep this marker with the story tail-editor release so Netlify receives a
+# conventional config-file change and performs a fresh production build.
+# story-tail-editor-modal: 2026-09-11
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# 离线推送的执行函数已迁移至 Supabase Edge Functions（supabase/functions/），
+# 原因：Netlify Background Functions 免费档不可用。部署方式见 docs/push-supabase.sql。
+
+# 字体/模型/图片是不带指纹的静态资源，体积大（中文字体 7~24MB、3D 模型 10MB+）。
+# 设为一年 immutable，浏览器命中后回访零带宽。更新这些文件时请改文件名（加版本后缀），
+# 否则旧客户端会一直用缓存。
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/models/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# 其余稳定静态资源：HDR 环境光、地图边界数据、音效，以及组件/主题/装饰图等目录。
+# 这些走 fetch()/Audio()/Environment 加载，绕过了 SW 按类型的缓存，需 HTTP 头兜底。
+# 同样：更新内容请改文件名。
+[[headers]]
+  for = "/hdri/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/countries.geo.json"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/widgets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/birds/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/diary/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/game-covers/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/game-builtins/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/xiaohongshu/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Service Worker 文件本身绝不能缓存：浏览器只在「拿到新的 sw.js」时才会触发
+# install/activate。若 sw.js 被 CDN 或浏览器缓存住，页面会一直跑旧 SW、
+# 拿不到新构建（本次通话折叠修复就卡在这里：/main@fa42d13 已含修复，
+# 客户端却仍在跑旧 JS）。
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# 根目录散图（吉祥物小卷、默认壁纸）——同样改文件名才更新。
+[[headers]]
+  for = "/mascot.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/default-wallpaper.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
