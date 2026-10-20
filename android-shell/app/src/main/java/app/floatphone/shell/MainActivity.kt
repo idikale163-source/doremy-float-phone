@@ -300,7 +300,31 @@ class MainActivity : AppCompatActivity() {
         // WebView 只能在主线程访问，投递时由 ShellBus 统一 post 到主线程。
         ShellBus.webView = webView
 
+        val proxyClient = OkHttpClient.Builder().followRedirects(true).build()
+        val BACKEND_TARGET = "https://float.wenyuchu0216.cc.cd"
+
         webView.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+                val url = request.url.toString()
+                if (url.startsWith(SITE_URL) || url.startsWith("https://doremy-float-phone.vercel.app")) {
+                    val targetUrl = url.replace(SITE_URL, BACKEND_TARGET).replace("https://doremy-float-phone.vercel.app", BACKEND_TARGET)
+                    return runCatching {
+                        val builder = Request.Builder().url(targetUrl)
+                        for ((k, v) in request.requestHeaders) {
+                            if (!k.equals("Host", ignoreCase = true)) {
+                                builder.header(k, v)
+                            }
+                        }
+                        val resp = proxyClient.newCall(builder.build()).execute()
+                        val mimeType = resp.header("Content-Type")?.split(";")?.get(0)?.trim() ?: "text/html"
+                        val encoding = if (mimeType.contains("text") || mimeType.contains("javascript") || mimeType.contains("json")) "utf-8" else null
+                        val bodyBytes = resp.body?.bytes() ?: ByteArray(0)
+                        WebResourceResponse(mimeType, encoding, resp.code, resp.message.ifEmpty { "OK" }, resp.headers.toMap(), ByteArrayInputStream(bodyBytes))
+                    }.getOrNull()
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
+
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
                 val scheme = url.scheme ?: return false
