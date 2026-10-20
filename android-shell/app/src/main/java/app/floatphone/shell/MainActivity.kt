@@ -27,8 +27,6 @@ import android.provider.Settings
 import android.util.Base64
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import android.webkit.CookieManager
 import android.webkit.DownloadListener
 import android.webkit.JavascriptInterface
