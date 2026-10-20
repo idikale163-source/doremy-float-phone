@@ -38,8 +38,8 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/**": ["./data/**"],
   },
-  webpack: (config, { isServer, webpack }) => {
-    if (!isServer) {
+  webpack: (config, { isServer, nextRuntime, webpack }) => {
+    if (!isServer || nextRuntime === 'edge') {
       // @gltf-transform/core 的 dist 引用 node:fs / node:path(带 node: 前缀),
       // 它的 browser 字段只映射了裸 fs/path,webpack 对 node: 前缀报 UnhandledSchemeError。
       // 客户端包里剥掉前缀,再用 fallback 置空(浏览器路径实际只用 WebIO,不会真调 fs)。
@@ -57,6 +57,8 @@ const nextConfig = {
         http: false,
         net: false,
         tls: false,
+        dns: false,
+        'fs/promises': false,
       };
     }
     return config;
