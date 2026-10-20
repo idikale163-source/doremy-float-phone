@@ -44,7 +44,7 @@ const nextConfig = {
       // 它的 browser 字段只映射了裸 fs/path,webpack 对 node: 前缀报 UnhandledSchemeError。
       // 客户端包里剥掉前缀,再用 fallback 置空(浏览器路径实际只用 WebIO,不会真调 fs)。
       config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+        new webpack.NormalModuleReplacementPlugin(/^node:(fs|path|os)/, (resource) => {
           resource.request = resource.request.replace(/^node:/, "");
         }),
       );
