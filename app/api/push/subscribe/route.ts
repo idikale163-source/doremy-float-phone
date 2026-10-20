@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 
 import { cleanAccountText, getCurrentAccount } from "@/lib/server/account-auth";

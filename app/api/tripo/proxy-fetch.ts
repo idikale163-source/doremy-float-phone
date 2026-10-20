@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 // Tripo 出网请求的代理感知 fetch。
 // 本地 dev 时开发机常靠系统代理才能访问 api.tripo3d.ai，而 Node 的 fetch
 // 不读代理环境变量（curl 读，所以「curl 通、route 超时」）。这里检测到

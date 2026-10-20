@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 
 import type { BlackMarketRenderRule, BlackMarketTheaterRarity, BlackMarketTheaterTemplate } from "@/lib/black-market-types";

@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from "next/server";
 
 import type { GameRoleSlot, GameTemplate } from "@/lib/game-types";
