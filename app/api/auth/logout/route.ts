@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { NextResponse } from "next/server";
 
 import { ACCOUNT_SESSION_COOKIE, deleteSessionToken, readCookie } from "@/lib/server/account-auth";

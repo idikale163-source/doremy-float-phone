@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import { NextRequest, NextResponse } from "next/server";
 import { ProxyAgent, fetch as undiciFetch, type Dispatcher } from "undici";
 

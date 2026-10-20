@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import nodeCrypto from "node:crypto";
 
 import { NextResponse } from "next/server";
