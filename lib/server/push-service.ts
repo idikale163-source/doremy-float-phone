@@ -3,7 +3,8 @@
 
 import { randomBytes } from "node:crypto";
 
-import webpush from "web-push";
+// import webpush dynamically for edge
+async function getWebPush() { try { return (await import("web-push")).default; } catch { return null; } }
 
 import { encodeSupabaseFilter, getSupabaseServerConfig, supabaseRestFetch } from "./supabase-rest";
 
@@ -102,7 +103,8 @@ export async function getOrCreateVapidConfig(): Promise<VapidKeys> {
     return { publicKey: existing.data[0].vapid_public_key, privateKey: existing.data[0].vapid_private_key };
   }
 
-  const keys = webpush.generateVAPIDKeys();
+  const wp = await getWebPush(); if (!wp) throw new Error("Edge 环境不支持原生 webpush");
+  const keys = wp.generateVAPIDKeys();
   const insert = await supabaseRestFetch("push_server_config", {
     method: "POST",
     headers: { Prefer: "resolution=ignore-duplicates" },
@@ -206,7 +208,8 @@ export async function sendPushToUser(
   for (const sub of webSubs) {
     const endpointFilter = `push_subscriptions?endpoint=eq.${encodeSupabaseFilter(sub.endpoint)}`;
     try {
-      await webpush.sendNotification(
+      const wp = await getWebPush(); if (!wp) return { ok: false, error: "Edge 环境不支持原生 webpush" };
+  await wp.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
         payload,
         {

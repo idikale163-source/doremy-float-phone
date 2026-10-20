@@ -53,6 +53,10 @@ const nextConfig = {
         fs: false,
         path: false,
         module: false,
+        https: false,
+        http: false,
+        net: false,
+        tls: false,
       };
     }
     return config;
