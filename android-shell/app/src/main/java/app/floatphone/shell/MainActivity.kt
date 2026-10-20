@@ -331,12 +331,9 @@ class MainActivity : AppCompatActivity() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url
                 val scheme = url.scheme ?: return false
-                // 站内导航留在壳里；http(s) 外链和自定义协议（shortcuts:// 等）交给系统
+                // 所有 http/https 流量强制全部在 WebView 内部加载，绝不跳外部浏览器！
                 if (scheme == "http" || scheme == "https") {
-                    if (url.host == Uri.parse(SITE_URL).host) return false
-                    return runCatching {
-                        startActivity(Intent(Intent.ACTION_VIEW, url)); true
-                    }.getOrDefault(true)
+                    return false
                 }
                 return runCatching {
                     startActivity(Intent(Intent.ACTION_VIEW, url)); true
