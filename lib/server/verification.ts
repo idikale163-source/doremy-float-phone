@@ -1,7 +1,7 @@
 // lib/server/verification.ts — 成年审核激活码申请：服务端共享工具。
 // 表/桶见 docs/verify-supabase.sql；管理密钥来自环境变量 VERIFY_ADMIN_KEY。
 
-import nodeCrypto from "crypto";
+import nodeCrypto from "node:crypto";
 
 import { getSupabaseServerConfig } from "@/lib/server/supabase-rest";
 

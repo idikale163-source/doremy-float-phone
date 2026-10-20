@@ -3,7 +3,7 @@
 // 随之瘦身。桶复用应用包所在的 custom-app-market-packages（该桶本就是 public，
 // 免去自部署用户建新桶），路径前缀 icons/ 隔离。写入走发布路径的转存 +
 // icon 路由的惰性迁移，两边共用这里的上传工具。
-import nodeCrypto from "crypto";
+import nodeCrypto from "node:crypto";
 
 import { getSupabaseServerConfig } from "./supabase-rest";
 

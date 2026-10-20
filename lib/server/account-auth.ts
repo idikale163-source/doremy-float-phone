@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 import { ACCOUNT_SESSION_COOKIE as SHARED_ACCOUNT_SESSION_COOKIE } from "../account-cookie-constants";
 import { isSelfHostedModeEnabled } from "../self-hosting";
