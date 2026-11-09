@@ -1,16 +1,44 @@
 name: Deploy to Netlify
-
 on:
   workflow_dispatch:
+    inputs:
+      sync_upstream:
+        description: "是否先把源码重置为上游最新（覆盖本仓库差异）"
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [main]
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # 可选：把工作区重置为上游 doremy.float.phone 最新代码。
+      # runner 在 GitHub 内网，拉 145MB 只要几秒。
+      - name: Sync upstream source
+        if: ${{ inputs.sync_upstream }}
+        run: |
+          git remote add upstream https://github.com/doremy1203/doremy.float.phone.git
+          git fetch --depth=1 upstream main
+          git reset --hard FETCH_HEAD
+          git clean -fdx
+          echo "已重置到上游: $(git log --oneline -1)"
+
+      # 上游仓库不带 netlify.toml，重置后必须从本仓库取回，否则会丢失
+      # @netlify/plugin-nextjs 与全套 Cache-Control 头配置。
+      - name: Restore netlify.toml
+        if: ${{ inputs.sync_upstream }}
+        run: |
+          if [ ! -f netlify.toml ]; then
+            git show origin/main:netlify.toml > netlify.toml
+            echo "已从 origin/main 恢复 netlify.toml"
+          else
+            echo "netlify.toml 已存在，跳过"
+          fi
+
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
