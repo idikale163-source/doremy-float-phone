@@ -7,6 +7,11 @@ on:
         description: "要加载的自部署站点地址（https://…）"
         required: false
         type: string
+      sync_upstream:
+        description: "是否先把源码重置为上游最新（覆盖本仓库差异）"
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [main]
     paths: ["android-shell/**", ".github/workflows/android-shell.yml"]
@@ -23,6 +28,17 @@ jobs:
       SHELL_SITE_URL: ${{ inputs.site_url || vars.SHELL_SITE_URL }}
     steps:
       - uses: actions/checkout@v4
+
+      # 可选：把工作区重置为上游 doremy.float.phone 最新代码。
+      # runner 在 GitHub 内网，拉 145MB 只要几秒，不需要在手机上硬扛。
+      - name: Sync upstream source
+        if: ${{ inputs.sync_upstream }}
+        run: |
+          git remote add upstream https://github.com/doremy1203/doremy.float.phone.git
+          git fetch --depth=1 upstream main
+          git reset --hard FETCH_HEAD
+          git clean -fdx
+          echo "已重置到上游: $(git log --oneline -1)"
 
       - uses: actions/setup-java@v4
         with:
