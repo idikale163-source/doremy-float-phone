@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  桌面小组件布局。
+
+  刻意只有一个 ImageView：内容（头像/正文/状态/落款）全部由网页模板渲染成
+  一张 PNG 贴进来。原因是 RemoteViews 只认基础控件、写不了 CSS，
+  而用户要的是「自己排版、自己写样式」——只能走「网页画好、这里贴图」。
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/widget_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/phone_widget_desc" />
+</FrameLayout>

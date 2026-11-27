@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  通话控制无障碍服务声明。
+
+  canRetrieveWindowContent=true 是「权限开大」的关键：只有它能让我们读取当前前台
+  App 的界面结构（后续想做「角色看到我在刷什么/在跟谁聊」这类深度参与功能，都要靠它）。
+  flagReportViewIds 一并打开，节点才会带上 viewIdResourceName，定位更准。
+
+  typeWindowStateChanged + typeWindowContentChanged：App 切换、页面内容变化时收到回调，
+  用于在用户中途离开时把浮窗重新顶到最前（否则切 App 后浮窗可能被新窗口盖住）。
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows|flagIncludeNotImportantViews"
+    android:canRetrieveWindowContent="true"
+    android:canTakeScreenshot="true"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="200"
+    android:summary="@string/accessibility_service_summary" />
